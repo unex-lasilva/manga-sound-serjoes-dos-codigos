@@ -1,0 +1,88 @@
+import java.util.Objects;
+
+public class ReprodutorLista {
+    private ListaReproducao listaReproducao;
+    private Status status;
+    private int indiceAtual;
+
+    private enum Status {
+        PLAYING, PAUSED, STOPPED;
+    }
+
+    public ReprodutorLista() {
+        this.status = Status.STOPPED;
+        this.indiceAtual = 0;
+    }
+
+    public void setListaReproducao(ListaReproducao lista) {
+        this.listaReproducao = Objects.requireNonNull(lista, "Lista de reprodução não pode ser nula");
+        this.indiceAtual = 0;
+        this.status = Status.STOPPED;
+    }
+
+    public ListaReproducao getListaReproducao() {
+        return listaReproducao;
+    }
+
+    private boolean isListaValida() {
+        return listaReproducao != null && !listaReproducao.isVazia();
+    }
+
+    public void play() {
+        if (!isListaValida()) {
+            System.out.println("A lista de reprodução está vazia ou não foi definida.");
+            return;
+        }
+
+        Musica atual = listaReproducao.obterMusica(indiceAtual);
+        System.out.println("Tocando: " + atual);
+        status = Status.PLAYING;
+    }
+
+    public void pause() {
+        if (status != Status.PLAYING) {
+            System.out.println("Não é possível pausar, a música não está tocando.");
+            return;
+        }
+        System.out.println("Pausado");
+        status = Status.PAUSED;
+    }
+
+    public void stop() {
+        System.out.println("Parado");
+        status = Status.STOPPED;
+    }
+
+    public void proximaMusica() {
+        if (!isListaValida()) return;
+
+        if (indiceAtual < listaReproducao.tamanho() - 1) {
+            indiceAtual++;
+            play();
+        } else {
+            System.out.println("Fim da lista");
+            stop();
+        }
+    }
+
+    public void musicaAnterior() {
+        if (!isListaValida()) return;
+
+        if (indiceAtual > 0) {
+            indiceAtual--;
+            play();
+        } else {
+            System.out.println("Você já está na primeira música.");
+        }
+    }
+
+    public void reiniciarLista() {
+        if (!isListaValida()) return;
+        indiceAtual = 0;
+        play();
+    }
+
+    public String getStatus() {
+        return status.name();
+    }
+}
